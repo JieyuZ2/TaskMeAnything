@@ -2,6 +2,8 @@
 
 ## 🔔News
 
+ **🔥[2024-06-01]: Code released!
+
 ## What's TaskMeAnything?
 
 ## TaskMeAnything-v1
@@ -9,7 +11,9 @@
 ### Source data
 Source data are stored in [HuggingFace](https://huggingface.co/datasets/jieyuz2/TaskMeAnything-v1-source)
 
-### A random subsets of TaskMeAnything-v1 tasks
+### Demo
+
+### TaskMeAnything-v1-Random
 
 #### Load TaskMeAnything-v1-Random ImageQA Dataset
 ```
@@ -34,11 +38,11 @@ with open('/path/save/video.mp4', 'wb') as f:
     f.write(video_binary)
 ```
 
-## TaskMeAnything-DB
+### TaskMeAnything-DB
 
 **TaskMeAnything-DB** are stored in [HuggingFace](https://huggingface.co/datasets/jieyuz2/TaskMeAnything-v1-db)
 
-## TaskMeAnything-UI
+### TaskMeAnything-UI
 
 ## Disclaimers
 

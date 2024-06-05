@@ -2,7 +2,7 @@
 
 ## 🔔News
 
- **🔥[2024-06-01]: Code released!
+ **🔥[2024-06-01]: Code released!**
 
 ## What's TaskMeAnything?
 

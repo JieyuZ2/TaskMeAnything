@@ -310,7 +310,10 @@ class WhatObjectSceneGraphTaskGenerator(SceneGraphTaskGenerator):
 
 		attributed_name = compose_attributed_name(subgraph.get("attributes", []), "object")
 
-		question = f"What is the {attributed_name} that {obj_reference}?"
+		if obj_reference != "":
+			obj_reference = f" that {obj_reference}"
+		question = f"What is the {attributed_name}{obj_reference}?"
+
 		answer = object
 		exclude_categories = [self.metadata.sg_object_to_cateid[obj] for obj in task_plan["answers"]]
 		negative_objects = [self.metadata.get_surfacename(cateid) for cateid in self.metadata.get_irrelevant_categories(exclude_categories)]
@@ -374,8 +377,11 @@ class WhatAttributeSceneGraphTaskGenerator(SceneGraphTaskGenerator):
 
 		attributed_name = compose_attributed_name(subgraph.get("attributes", []), "object")
 
+		if obj_reference != "":
+			obj_reference = f" that {obj_reference}"
+
 		attribute_type_word = lambda x: "attribute value" if x == "other" else x
-		question = f"What is the {attribute_type_word(attribute_type)} of the {attributed_name} that {obj_reference}?"
+		question = f"What is the {attribute_type_word(attribute_type)} of the {attributed_name}{obj_reference}?"
 		answer = attribute
 		negative_attributes = list(set(self.metadata.type_to_attribute[attribute_type]) - set(task_plan["answers"]))
 		options = self._compose_options(answer, negative_attributes)
@@ -463,7 +469,12 @@ class WhatRelationSceneGraphTaskGenerator(SceneGraphTaskGenerator):
 		source_attributed_name = compose_attributed_name(source_subgraph.get("attributes", []), "object")
 		target_attributed_name = compose_attributed_name(target_subgraph.get("attributes", []), "object")
 
-		question = f"What is the relation from the {source_attributed_name}, which {source_obj_reference}, to the {target_attributed_name}, which {target_obj_reference}?"
+		if source_obj_reference != "":
+			source_obj_reference = f", which {source_obj_reference}"
+		if target_obj_reference != "":
+			target_obj_reference = f", which {target_obj_reference}"
+
+		question = f"What is the relation from the {source_attributed_name}{source_obj_reference}, to the {target_attributed_name}{target_obj_reference}?"
 		answer = relation
 		negatives = list(set(self.metadata.relations) - set(task_plan["answers"]))
 		options = self._compose_options(answer, negatives)

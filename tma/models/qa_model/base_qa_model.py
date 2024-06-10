@@ -50,9 +50,9 @@ class QAModel(Model):
 		self.cache_path = cache_path
 
 		if self.cache_path is None:
-			print(f"[IMPORTANT] model cache is enabled, cache path: {cache_path}")
-		else:
 			print("[IMPORTANT] model cache is disabled")
+		else:
+			print(f"[IMPORTANT] model cache is enabled, cache path: {cache_path}")
 
 		self.enable_choice_search = enable_choice_search
 		if enable_choice_search:

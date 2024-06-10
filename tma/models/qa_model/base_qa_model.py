@@ -75,7 +75,7 @@ class QAModel(Model):
 			return self.model.qa(data, prompt)
 		else:
 			with diskcache.Cache(self.cache_path, size_limit=10 * (2 ** 30)) as cache:
-				key = json.dumps([self._data_to_str(data), prompt])
+				key = json.dumps([self.model_name, self._data_to_str(data), prompt])
 				response = cache.get(key, None)
 				if response is None:
 					response = self.model.qa(data, prompt)

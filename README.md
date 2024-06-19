@@ -22,7 +22,7 @@
 
 
 ## 🔔News
-
+ **🔥[2024-06-17]: Paper arXived [[link](https://arxiv.org/abs/2406.11794)]!**
  **🔥[2024-06-01]: Code released!**
 
 ## What's TaskMeAnything?

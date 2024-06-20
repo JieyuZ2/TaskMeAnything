@@ -4,12 +4,13 @@
 
 
 
-<h2 align="center"> <a href="">Task Me Anything</a></h2>
+<h2 align="center"> Task Me Anything</h2>
 
 <p align="center">
     <img src="teaser.png" width="1000" style="margin-bottom: 0.2;"/>
 <p>
 
+[**🌐 Homepage**](https://www.task-me-anything.org/) | [**📑 Paper**](https://arxiv.org/abs/2406.11775) | [**🤗 Huggingface**](https://huggingface.co/collections/jieyuz2/taskmeanything-664ebf028ab2524c0380526a) | [**💻 Interface**](https://huggingface.co/spaces/zixianma/TaskMeAnything-UI) 
 <h5 align="center"> If you like our project, please give us a star ⭐ on GitHub for latest update.  </h2>
 
 

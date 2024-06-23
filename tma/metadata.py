@@ -1,36 +1,40 @@
-from typing import List
+import json
+import numpy
+from ..metadata import MetaData
 
-import networkx as nx
+def handle_templates(template_path):
+        # iterate through json file and seperate into different number of params
+        templates_by_num_params = {}
 
+        with open(template_path, 'r') as file:
+            templates_data = json.load(file)
 
-class MetaData:
-	"""
-	Abstract class for metadata
-	"""
+        # Iterate over each template
+        for template_name, template_info in templates_data.items():
+            num_params = template_info["num_params"]
+            template_text = template_info["text"]
 
+            # Add the template text to the corresponding list based on the number of parameters
+            if num_params not in templates_by_num_params:
+                templates_by_num_params[num_params] = []
+            templates_by_num_params[num_params].append(template_text)
 
-class CategoryMetaData(MetaData):
-	def __init__(self):
-		super().__init__()
+        return templates_by_num_params
 
-		self.taxonomy = None
-		self.categories = None
-		self.category_info = None
-
-	def check_category_exists(self, cateid):
-		return cateid in self.categories
-
-	def get_surfacename(self, node):
-		return self.category_info[node]['surface_name'][0]
-
-	def get_relevant_categories(self, cateid):
-		return set(nx.descendants(self.taxonomy, cateid)) | set(nx.ancestors(self.taxonomy, cateid)) | {cateid}
-
-	def get_irrelevant_categories(self, cateid):
-		if isinstance(cateid, List):
-			relevant_categories = set()
-			for c in cateid:
-				relevant_categories |= self.get_relevant_categories(c)
-		else:
-			relevant_categories = self.get_relevant_categories(cateid)
-		return set(self.categories) - relevant_categories
+class MathTemplateMetaData(MetaData):
+    def __init__(self, path_to_metadata, template_path):
+        super.__init__()
+        self.templates_by_num_params = handle_templates(template_path=template_path)
+        
+    def get_params(self):
+        if len(self.templates_by_num_params) == 0:
+            raise AssertionError("The templates_by_num_params dictionary must contain at least one element.")
+        
+        return self.templates_by_num_params.keys
+    
+    def get_templates(self, param_count):
+        if len(self.templates_by_num_params) == 0:
+            raise AssertionError("The templates_by_num_params dictionary must contain at least one element.")
+        
+        return self.templates_by_num_params[param_count]
+    

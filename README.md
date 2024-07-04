@@ -58,6 +58,11 @@ cd ./TaskMeAnything
 
 pip install -r requirements.txt
 ```
+
+
+### Usage
+Please check out the `demo` folder for notebook examples of how to use TaskMeAnything.
+
 ### Source data
 Source data is stored in [HuggingFace](https://huggingface.co/datasets/jieyuz2/TaskMeAnything-v1-source). It includes `3d_assets`, `agqa_video`, and `object_images`.
 
@@ -81,8 +86,6 @@ We have 28 task generators in TaskMeAnything-v1, across 5 Scenarios:
 We support the following ImageQA and VideoQA models: 
 - `ImageQA`: qwenvl-chat, qwenvl, llavav1.5-7b, llavav1.5-13b, instructblip-vicuna7b, instructblip-vicuna13b, internvl-chat-v1.5, gemini-vision-pro, qwen-vl-max, gpt4v, gpt4o
 - `VideoQA`: video-llama2-7b, video-llama2-13b, video-llava-7b, chat-univi-7b, chat-univi-13b, video-chatgpt-7b, video-chat2-7b
-### Demo
-Stay tuned! We will release the demo soon.
 
 ## TaskMeAnything-v1-Random
 [TaskMeAnything-v1-imageqa-random](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-random) is a dataset randomly selected from TaskMeAnything-v1, including 5,700 ImageQA.

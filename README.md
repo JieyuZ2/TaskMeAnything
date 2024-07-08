@@ -25,11 +25,11 @@
 TaskMeAnything is a benchmark generation engine which produces a benchmark for large multimodal language models (MLMs) tailored to a user's needs. 
 In particular, name maintains an extendable taxonomy of visual assets and can programmatically generate a vast number of task instances. 
 Additionally, it algorithmically addresses user queries regarding MLM performance efficiently within a computational budget. 
-The current version can generate >500M image/video question-answering pairs, which focus on evaluating MLM perceptual capabilities.
+The current version can generate > 750M image/video question-answering pairs, which focus on evaluating MLM perceptual capabilities.
 
 
 We release the following resources: 
-1. [**TaskMeAnything-v1**](https://github.com/JieyuZ2/TaskMeAnything): the first version of TaskMeAnything, includes 28 task generators which can generate over 500M VQA task.
+1. [**TaskMeAnything-v1**](https://github.com/JieyuZ2/TaskMeAnything): the first version of TaskMeAnything, includes 28 task generators which can generate over 750M VQA task.
 2. **TaskMeAnything-v1-Random**[[ImageQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-random)|[VideoQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-videoqa-random)]: A randomly selected from TaskMeAnything-v1, including 5,700 ImageQA and 1,800 VideoQA task instances.
 3. [**TaskMeAnything-DB**](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-eval-db): A database for TaskMeAnything, which stores the evaluation results of 13 open-source MLMs over 1M VQA task instances.
 4. [**TaskMeAnything-UI**](): An interactive graphical interface built upon TaskMeAnything-DB, which allows users to interact with the performance of models on TaskMeAnything-v1 in a intuitve way.

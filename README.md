@@ -27,6 +27,7 @@ In particular, name maintains an extendable taxonomy of visual assets and can pr
 Additionally, it algorithmically addresses user queries regarding MLM performance efficiently within a computational budget. 
 The current version can generate > 750M image/video question-answering pairs, which focus on evaluating MLM perceptual capabilities.
 
+:exclamation: **TaskMeAnything does NOT involve any AI model during image/video, question, and answer generation, so the generated tasks do NOT suffer from model imperfection or hallucinations.**
 
 We release the following resources: 
 1. [**TaskMeAnything-v1**](https://github.com/JieyuZ2/TaskMeAnything): the first version of TaskMeAnything, includes 28 task generators which can generate over 750M VQA task.

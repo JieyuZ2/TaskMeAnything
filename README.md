@@ -39,6 +39,10 @@ We release the following resources:
 
 ## TaskMeAnything-v1
 
+### Usage
+Please check out the `demo` folder for notebook examples of how to use TaskMeAnything.
+
+
 ### Installation
 You can easily download the repo and set up the environments via:
 ```
@@ -60,9 +64,6 @@ cd ./TaskMeAnything
 pip install -r requirements.txt
 ```
 
-
-### Usage
-Please check out the `demo` folder for notebook examples of how to use TaskMeAnything.
 
 ### Source data
 Source data is stored in [HuggingFace](https://huggingface.co/datasets/jieyuz2/TaskMeAnything-v1-source). It includes `3d_assets`, `agqa_video`, and `object_images`.

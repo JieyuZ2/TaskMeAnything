@@ -154,7 +154,7 @@ def subgraph_contain_multiple_same_direction_relations(subgraph):
 def subgraph_contain_multiple_relations(subgraph):
 	rel = False
 	for item in subgraph:
-		if len(item) == 3:
+		if isinstance(item, tuple) and len(item) == 3:
 			if rel:
 				return True
 			rel = True

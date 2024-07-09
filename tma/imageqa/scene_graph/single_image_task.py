@@ -174,7 +174,7 @@ class SceneGraphTaskGenerator(TaskGenerator):
 		"target object"
 	]
 
-	def __init__(self, metadata: SceneGraphMetaData, subgraph_size=3, n_subgraph_per_answer=1, max_scene_graph_size=10000, seed=42):
+	def __init__(self, metadata: SceneGraphMetaData, subgraph_size=4, n_subgraph_per_answer=1, max_scene_graph_size=10000, seed=42):
 		super().__init__(metadata, seed=seed)
 		self.subgraph_size = subgraph_size
 		self.n_subgraph_per_answer = n_subgraph_per_answer
@@ -184,7 +184,6 @@ class SceneGraphTaskGenerator(TaskGenerator):
 			self,
 			scene_graph,
 			start_node,
-			subgraph_size=5,
 			exclude_attribute_type=None,
 			exclude_object=[]
 	):
@@ -201,11 +200,11 @@ class SceneGraphTaskGenerator(TaskGenerator):
 				elements.append(obj)
 				elements += [(obj, attr) for attr in scene_graph["objects"][obj]['attributes']]
 				stamp.append((start, len(elements)))
-		if len(elements) < subgraph_size:
+		if len(elements) < self.subgraph_size:
 			return []
 
 		# sample all subgraphs that contain the start node with the given size
-		selection = constrained_combinations(len(elements), subgraph_size, stamp)
+		selection = constrained_combinations(len(elements), self.subgraph_size, stamp)
 
 		# distinguish subgraphs with and without the objects
 		with_object_mask = np.any(selection[:, [start for start, _ in stamp]], axis=1)
@@ -270,13 +269,13 @@ class WhatObjectSceneGraphTaskGenerator(SceneGraphTaskGenerator):
 		"answers"       : "list",
 	}
 
-	def enumerate_object_subgraphs(self, scene_graph, subgraph_size=4):
+	def enumerate_object_subgraphs(self, scene_graph):
 		subgraph_to_objects = {}
 		for object, info in scene_graph["objects"].items():
 			obj_name = info['name']
 			if self.metadata.check_object_in_category(obj_name):
-				subgraphs = self._enumerate_subgraphs_w_object(scene_graph, object, subgraph_size)
-				subgraphs = self.rng.choice(list(subgraphs), min(self.n_subgraph_per_answer, len(subgraphs)), replace=False)
+				subgraphs = self._enumerate_subgraphs_w_object(scene_graph, object)
+				# subgraphs = self.rng.choice(list(subgraphs), min(self.n_subgraph_per_answer, len(subgraphs)), replace=False)
 				for subgraph in subgraphs:
 					if subgraph not in subgraph_to_objects:
 						subgraph_to_objects[subgraph] = set()
@@ -332,13 +331,13 @@ class WhatAttributeSceneGraphTaskGenerator(SceneGraphTaskGenerator):
 		"answers"        : "list",
 	}
 
-	def enumerate_attribute_subgraphs(self, scene_graph, subgraph_size=4):
+	def enumerate_attribute_subgraphs(self, scene_graph):
 		subgraph_to_nodes = {}
 		for node, info in scene_graph["objects"].items():
 			for attr in info['attributes']:
 				attr_type = self.metadata.get_attribute_type(attr)
-				subgraphs = self._enumerate_subgraphs_w_object(scene_graph, node, subgraph_size, exclude_attribute_type=attr_type)
-				subgraphs = self.rng.choice(list(subgraphs), min(self.n_subgraph_per_answer, len(subgraphs)), replace=False)
+				subgraphs = self._enumerate_subgraphs_w_object(scene_graph, node, exclude_attribute_type=attr_type)
+				# subgraphs = self.rng.choice(list(subgraphs), min(self.n_subgraph_per_answer, len(subgraphs)), replace=False)
 				for subgraph in subgraphs:
 					if subgraph not in subgraph_to_nodes:
 						subgraph_to_nodes[subgraph] = {}
@@ -402,10 +401,10 @@ class WhatRelationSceneGraphTaskGenerator(SceneGraphTaskGenerator):
 
 	}
 
-	def enumerate_relation_subgraphs(self, scene_graph, subgraph_size=4):
+	def enumerate_relation_subgraphs(self, scene_graph):
 		subgraph_to_nodes_cnt = {}
 		for node, info in scene_graph["objects"].items():
-			subgraphs = self._enumerate_subgraphs_w_object(scene_graph, node, subgraph_size)
+			subgraphs = self._enumerate_subgraphs_w_object(scene_graph, node)
 			for subgraph in subgraphs:
 				if subgraph not in subgraph_to_nodes_cnt:
 					subgraph_to_nodes_cnt[subgraph] = 0
@@ -422,11 +421,11 @@ class WhatRelationSceneGraphTaskGenerator(SceneGraphTaskGenerator):
 		subgraph_to_relation = {}
 		for (obj1, obj2), rels in relations.items():
 
-			subgraphs1 = self._enumerate_subgraphs_w_object(scene_graph, obj1, subgraph_size, exclude_object=[obj2])
+			subgraphs1 = self._enumerate_subgraphs_w_object(scene_graph, obj1, exclude_object=[obj2])
 			subgraphs1 = [subgraph for subgraph in subgraphs1 if subgraph_to_nodes_cnt[subgraph] == 1]
 			subgraphs1 = self.rng.choice(list(subgraphs1), min(self.n_subgraph_per_answer, len(subgraphs1)), replace=False)
 
-			subgraphs2 = self._enumerate_subgraphs_w_object(scene_graph, obj2, subgraph_size, exclude_object=[obj1])
+			subgraphs2 = self._enumerate_subgraphs_w_object(scene_graph, obj2, exclude_object=[obj1])
 			subgraphs2 = [subgraph for subgraph in subgraphs2 if subgraph_to_nodes_cnt[subgraph] == 1]
 			subgraphs2 = self.rng.choice(list(subgraphs2), min(self.n_subgraph_per_answer, len(subgraphs2)), replace=False)
 

@@ -17,7 +17,7 @@
 
 
 ## 🔔News
- **🔥[2024-06-17]: Paper arXived [[link](https://arxiv.org/abs/2406.11794)]!**
+ **🔥[2024-06-17]: Paper arXived!**
  
  **🔥[2024-06-01]: Code released!**
 
@@ -25,11 +25,12 @@
 TaskMeAnything is a benchmark generation engine which produces a benchmark for large multimodal language models (MLMs) tailored to a user's needs. 
 In particular, name maintains an extendable taxonomy of visual assets and can programmatically generate a vast number of task instances. 
 Additionally, it algorithmically addresses user queries regarding MLM performance efficiently within a computational budget. 
-The current version can generate >500M image/video question-answering pairs, which focus on evaluating MLM perceptual capabilities.
+The current version can generate > 750M image/video question-answering pairs, which focus on evaluating MLM perceptual capabilities.
 
+:exclamation: **TaskMeAnything does NOT involve any AI model during image/video, question, and answer generation, so the generated tasks do NOT suffer from model imperfection or hallucinations.**
 
 We release the following resources: 
-1. [**TaskMeAnything-v1**](https://github.com/JieyuZ2/TaskMeAnything): the first version of TaskMeAnything, includes 28 task generators which can generate over 500M VQA task.
+1. [**TaskMeAnything-v1**](https://github.com/JieyuZ2/TaskMeAnything): the first version of TaskMeAnything, includes 28 task generators which can generate over 750M VQA task.
 2. **TaskMeAnything-v1-Random**[[ImageQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-random)|[VideoQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-videoqa-random)]: A randomly selected from TaskMeAnything-v1, including 5,700 ImageQA and 1,800 VideoQA task instances.
 3. [**TaskMeAnything-DB**](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-eval-db): A database for TaskMeAnything, which stores the evaluation results of 13 open-source MLMs over 1M VQA task instances.
 4. [**TaskMeAnything-UI**](): An interactive graphical interface built upon TaskMeAnything-DB, which allows users to interact with the performance of models on TaskMeAnything-v1 in a intuitve way.
@@ -37,6 +38,10 @@ We release the following resources:
    
 
 ## TaskMeAnything-v1
+
+### Usage
+Please check out the `demo` folder for notebook examples of how to use TaskMeAnything.
+
 
 ### Installation
 You can easily download the repo and set up the environments via:
@@ -58,6 +63,8 @@ cd ./TaskMeAnything
 
 pip install -r requirements.txt
 ```
+
+
 ### Source data
 Source data is stored in [HuggingFace](https://huggingface.co/datasets/jieyuz2/TaskMeAnything-v1-source). It includes `3d_assets`, `agqa_video`, and `object_images`.
 
@@ -81,8 +88,6 @@ We have 28 task generators in TaskMeAnything-v1, across 5 Scenarios:
 We support the following ImageQA and VideoQA models: 
 - `ImageQA`: qwenvl-chat, qwenvl, llavav1.5-7b, llavav1.5-13b, instructblip-vicuna7b, instructblip-vicuna13b, internvl-chat-v1.5, gemini-vision-pro, qwen-vl-max, gpt4v, gpt4o
 - `VideoQA`: video-llama2-7b, video-llama2-13b, video-llava-7b, chat-univi-7b, chat-univi-13b, video-chatgpt-7b, video-chat2-7b
-### Demo
-Stay tuned! We will release the demo soon.
 
 ## TaskMeAnything-v1-Random
 [TaskMeAnything-v1-imageqa-random](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-random) is a dataset randomly selected from TaskMeAnything-v1, including 5,700 ImageQA.

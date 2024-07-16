@@ -1,0 +1,6 @@
+{
+    "template1": {
+        "text": "Where do the vectors from {param1} to {param2} and from {param3} to {param4} intersect?",
+        "num_params": 4
+    }
+}

@@ -25,8 +25,8 @@ def handle_templates(template_path):
         return templates_by_num_params
 
 class MathTemplateMetaData(MetaData):
-    def __init__(self, path_to_metadata, template_path):
-        super().__init__(path_to_metadata)
+    def __init__(self, template_path):
+        super().__init__()
         self.templates_by_num_params = handle_templates(template_path=template_path)
         
     def get_params(self):

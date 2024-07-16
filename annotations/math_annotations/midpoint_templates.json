@@ -1,0 +1,6 @@
+{
+    "template1": {
+        "text": "What is the midpoint of {param1} and {param2}?",
+        "num_params": 2
+    }
+}

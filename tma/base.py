@@ -4,7 +4,7 @@ import numpy as np
 
 from .constant import NUM_OPTIONS
 from .metadata import MetaData
-from .task_store import TaskStore
+from task_store import TaskStore
 
 
 class TaskGenerator:

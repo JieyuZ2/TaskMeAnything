@@ -1,0 +1,26 @@
+{
+    "template1": {
+        "text": "Given an angle of {0} degrees, what shape can it be part of?",
+        "num_params": 1
+    },
+    "template2": {
+        "text": "Given angles of {0} degrees and {1} degrees, determine the shape.",
+        "num_params": 2
+    },
+    "template3": {
+        "text": "Given angles of {0} degrees, {1} degrees, and {2} degrees, identify the shape.",
+        "num_params": 3
+    },
+    "template4": {
+        "text": "Given angles of {0}, {1}, {2}, and {3} degrees, what shape is it?",
+        "num_params": 4
+    },
+    "template5": {
+        "text": "What shape has angles of {0}, {1}, {2}, {3}, and {4} degrees?",
+        "num_params": 5
+    },
+    "template6": {
+        "text": "Identify the shape with angles of {0}, {1}, {2}, {3}, {4}, and {5} degrees.",
+        "num_params": 6
+    }
+}

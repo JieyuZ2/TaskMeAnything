@@ -1,15 +1,24 @@
 import tempfile
 from typing import Callable, Union
 
+import huggingface_hub
 import numpy as np
 import torch
 from PIL import Image, ImageDraw, ImageFont
+import os
 
 from .base_qa_model import QAModel, QAModelInstance
 from .imageqa_model import ImageQAModel
 
 videoqa_models = {
-
+	"video-llama2-7b" : ("VideoLLaMA2", "video-llama2-7b"),
+	"video-llama2-13b": ("VideoLLaMA2", "video-llama2-13b"),
+	"video-llava-7b"  : ("VideoLLaVA", "LanguageBind/Video-LLaVA-7B"),
+	"chat-univi-7b"   : ("ChatUniVi", "chat-univi-7b"),
+	"chat-univi-13b"  : ("ChatUniVi", "chat-univi-13b"),
+	"video-chatgpt-7b": ("VideoChatGPT", "video-chatgpt-7b"),
+	"video-chat2-7b"  : ("VideoChat2", "video-chat2-7b"),
+	"vqamodel"        : ("VQAModel", "vqa_model_you_choose")
 }
 
 
@@ -207,3 +216,374 @@ class ImageQAModel4Video(VideoQAModel):
 				video_path = tmp.name
 				answer = self.model._qa(video_to_concat_image(video_path, self.num_rows, self.num_columns), prompt)
 			return answer
+
+class VideoLLaVA(QAModelInstance):
+	def __init__(self, ckpt='LanguageBind/Video-LLaVA-7B', torch_device=torch.device("cuda"), model_precision=torch.float32):
+		# Environment setup# Disable certain initializations if necessary
+
+		from .videoqa_models_library.Video_LLaVA.videollava.utils import disable_torch_init
+		from .videoqa_models_library.Video_LLaVA.videollava import constants
+		from .videoqa_models_library.Video_LLaVA.videollava.conversation import conv_templates, SeparatorStyle
+		from .videoqa_models_library.Video_LLaVA.videollava.model.builder import load_pretrained_model
+		from .videoqa_models_library.Video_LLaVA.videollava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria
+
+		self.constants = constants
+		self.SeparatorStyle = SeparatorStyle
+		self.tokenizer_image_token = tokenizer_image_token
+		self.KeywordsStoppingCriteria = KeywordsStoppingCriteria
+		self.conv_templates = conv_templates
+
+		disable_torch_init()
+		cache_dir = "cache_dir"
+
+		self.device = torch_device
+		model_name = get_model_name_from_path(ckpt)
+		self.tokenizer, self.model, processor, _ = load_pretrained_model(ckpt, None, model_name, device=torch_device, cache_dir=cache_dir)
+		self.video_processor = processor['video']
+
+	def qa(self, video_path, question):
+		conv_mode = "llava_v1"
+		conv = self.conv_templates[conv_mode].copy()
+
+		video_tensor = self.video_processor(video_path, return_tensors='pt')['pixel_values']
+		if isinstance(video_tensor, list):
+			tensor = [video.to(self.device, dtype=torch.float16) for video in video_tensor]
+		else:
+			tensor = video_tensor.to(self.device, dtype=torch.float16)
+
+		question = ' '.join([self.constants.DEFAULT_IMAGE_TOKEN] * self.model.get_video_tower().config.num_frames) + '\n' + question
+		conv.append_message(conv.roles[0], question)
+		conv.append_message(conv.roles[1], None)
+
+		# conv.append(question)
+		prompt = conv.get_prompt()
+
+		input_ids = self.tokenizer_image_token(prompt, self.tokenizer, self.constants.IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(0).to(self.device)
+		stop_str = conv.sep if conv.sep_style != self.SeparatorStyle.TWO else conv.sep2
+		keywords = [stop_str]
+		stopping_criteria = self.KeywordsStoppingCriteria(keywords, self.tokenizer, input_ids)
+
+		with torch.inference_mode():
+			output_ids = self.model.generate(
+				input_ids,
+				images=tensor,
+				do_sample=True,
+				temperature=0.1,
+				max_new_tokens=1024,
+				use_cache=True,
+				stopping_criteria=[stopping_criteria])
+
+		outputs = self.tokenizer.decode(output_ids[0, input_ids.shape[1]:]).strip()
+		if outputs.endswith(stop_str):
+			outputs = outputs[:-len(stop_str)].strip()
+		return outputs
+
+
+class ChatUniVi(QAModelInstance):
+	def __init__(self, ckpt='chat-univi-7b', torch_device=torch.device("cuda"), model_precision=torch.float32):
+		# Environment setup# Disable certain initializations if necessary
+
+		from .videoqa_models_library.Chat_UniVi.ChatUniVi import constants
+		from .videoqa_models_library.Chat_UniVi.ChatUniVi.conversation import conv_templates, SeparatorStyle
+		from .videoqa_models_library.Chat_UniVi.ChatUniVi.model.builder import load_pretrained_model
+		from .videoqa_models_library.Chat_UniVi.ChatUniVi.utils import disable_torch_init
+		from .videoqa_models_library.Chat_UniVi.ChatUniVi.mm_utils import tokenizer_image_token, KeywordsStoppingCriteria
+
+		from decord import VideoReader, cpu
+
+		self.constants = constants
+		self.cpu = cpu
+		self.VideoReader = VideoReader
+		self.conv_templates = conv_templates
+		self.tokenizer_image_token = tokenizer_image_token
+		self.KeywordsStoppingCriteria = KeywordsStoppingCriteria
+		self.SeparatorStyle = SeparatorStyle
+
+		disable_torch_init()
+		if ckpt == 'chat-univi-7b':
+			model_path = "Chat-UniVi/Chat-UniVi"
+		elif ckpt == 'chat-univi-13b':
+			model_path = "Chat-UniVi/Chat-UniVi-13B"
+		model_name = "ChatUniVi"
+		self.tokenizer, self.model, image_processor, context_len = load_pretrained_model(model_path, None, model_name)
+
+		mm_use_im_start_end = getattr(self.model.config, "mm_use_im_start_end", False)
+		mm_use_im_patch_token = getattr(self.model.config, "mm_use_im_patch_token", True)
+		if mm_use_im_patch_token:
+			self.tokenizer.add_tokens([self.constants.DEFAULT_IMAGE_PATCH_TOKEN], special_tokens=True)
+		if mm_use_im_start_end:
+			self.tokenizer.add_tokens([self.constants.DEFAULT_IM_START_TOKEN, self.constants.DEFAULT_IM_END_TOKEN], special_tokens=True)
+		self.model.resize_token_embeddings(len(self.tokenizer))
+
+		vision_tower = self.model.get_vision_tower()
+		if not vision_tower.is_loaded:
+			vision_tower.load_model()
+		self.image_processor = vision_tower.image_processor
+
+		if self.model.config.config["use_cluster"]:
+			for n, m in self.model.named_modules():
+				m = m.to(dtype=torch.bfloat16)
+
+	def qa(self, video_path, question):
+		# setting parameters
+		max_frames = 16
+		# The number of frames retained per second in the video.
+		video_framerate = 4
+		# Input Text
+		qs = question
+
+		# Sampling Parameter
+		conv_mode = "simple"
+		temperature = 0.2
+		top_p = None
+		num_beams = 1
+
+		if video_path is not None:
+			video_frames, slice_len = self._get_rawvideo_dec(video_path, self.image_processor, max_frames=max_frames, video_framerate=video_framerate)
+
+			if self.model.config.mm_use_im_start_end:
+				qs = self.constants.DEFAULT_IM_START_TOKEN + self.constants.DEFAULT_IMAGE_TOKEN * slice_len + self.constants.DEFAULT_IM_END_TOKEN + '\n' + qs
+			else:
+				qs = self.constants.DEFAULT_IMAGE_TOKEN * slice_len + '\n' + qs
+
+			conv = self.conv_templates[conv_mode].copy()
+			conv.append_message(conv.roles[0], qs)
+			conv.append_message(conv.roles[1], None)
+			prompt = conv.get_prompt()
+
+			input_ids = self.tokenizer_image_token(prompt, self.tokenizer, self.constants.IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(
+				0).cuda()
+
+			stop_str = conv.sep if conv.sep_style != self.SeparatorStyle.TWO else conv.sep2
+			keywords = [stop_str]
+			stopping_criteria = self.KeywordsStoppingCriteria(keywords, self.tokenizer, input_ids)
+
+			with torch.inference_mode():
+				output_ids = self.model.generate(
+					input_ids,
+					images=video_frames.half().cuda(),
+					do_sample=True,
+					temperature=temperature,
+					top_p=top_p,
+					num_beams=num_beams,
+					output_scores=True,
+					return_dict_in_generate=True,
+					max_new_tokens=1024,
+					use_cache=True,
+					stopping_criteria=[stopping_criteria])
+
+			output_ids = output_ids.sequences
+			input_token_len = input_ids.shape[1]
+			n_diff_input_output = (input_ids != output_ids[:, :input_token_len]).sum().item()
+			if n_diff_input_output > 0:
+				print(f'[Warning] {n_diff_input_output} output_ids are not the same as the input_ids')
+			outputs = self.tokenizer.batch_decode(output_ids[:, input_token_len:], skip_special_tokens=True)[0]
+			outputs = outputs.strip()
+			if outputs.endswith(stop_str):
+				outputs = outputs[:-len(stop_str)]
+			outputs = outputs.strip()
+			return outputs
+
+	def _get_rawvideo_dec(self, video_path, image_processor, max_frames=None, image_resolution=224, video_framerate=1, s=None, e=None):
+		# speed up video decode via decord.
+		if max_frames is None:
+			max_frames = 100
+		if s is None:
+			start_time, end_time = None, None
+		else:
+			start_time = int(s)
+			end_time = int(e)
+			start_time = start_time if start_time >= 0. else 0.
+			end_time = end_time if end_time >= 0. else 0.
+			if start_time > end_time:
+				start_time, end_time = end_time, start_time
+			elif start_time == end_time:
+				end_time = start_time + 1
+
+		if os.path.exists(video_path):
+			vreader = self.VideoReader(video_path, ctx=self.cpu(0))
+		else:
+			print(video_path)
+			raise FileNotFoundError
+
+		fps = vreader.get_avg_fps()
+		f_start = 0 if start_time is None else int(start_time * fps)
+		f_end = int(min(1000000000 if end_time is None else end_time * fps, len(vreader) - 1))
+		num_frames = f_end - f_start + 1
+		if num_frames > 0:
+			# T x 3 x H x W
+			sample_fps = int(video_framerate)
+			t_stride = int(round(float(fps) / sample_fps))
+
+			all_pos = list(range(f_start, f_end + 1, t_stride))
+			if len(all_pos) > max_frames:
+				sample_pos = [all_pos[_] for _ in np.linspace(0, len(all_pos) - 1, num=max_frames, dtype=int)]
+			else:
+				sample_pos = all_pos
+
+			batch = vreader.get_batch(sample_pos)
+			if hasattr(batch, 'asnumpy'):
+				batch_np = batch.asnumpy()
+			elif hasattr(batch, 'numpy'):
+				batch_np = batch.numpy()
+			else:
+				raise TypeError("The object does not have asnumpy or numpy methods.")
+			patch_images = [Image.fromarray(f) for f in batch_np]
+   
+			patch_images = torch.stack([image_processor.preprocess(img, return_tensors='pt')['pixel_values'][0] for img in patch_images])
+			slice_len = patch_images.shape[0]
+
+			return patch_images, slice_len
+		else:
+			print("video path: {} error.".format(video_path))
+
+
+class VideoChatGPT(QAModelInstance):
+	def __init__(self, ckpt, torch_device=torch.device("cuda"), model_precision=torch.float32):
+
+		from .videoqa_models_library.Video_ChatGPT.video_chatgpt.video_conversation import conv_templates, SeparatorStyle
+		from .videoqa_models_library.Video_ChatGPT.video_chatgpt.model.utils import KeywordsStoppingCriteria
+		from .videoqa_models_library.Video_ChatGPT.video_chatgpt.eval.model_utils import initialize_model, load_video
+
+		model_weights_path = huggingface_hub.snapshot_download(repo_id="weikaih/VideoChatGPT")
+		model_name = os.path.join(model_weights_path, 'LLaVA-Lightning-7B-v1-1')
+		projection_path = os.path.join(model_weights_path, 'video_chatgpt-7B.bin')
+		self.model, self.vision_tower, self.tokenizer, self.image_processor, self.video_token_len = initialize_model(model_name, projection_path)
+
+		self.conv_templates = conv_templates
+		self.load_video = load_video
+		self.KeywordsStoppingCriteria = KeywordsStoppingCriteria
+		self.SeparatorStyle = SeparatorStyle
+
+	def qa(self, video_path, question):
+
+		video_frames = self.load_video(video_path)
+
+		DEFAULT_VIDEO_TOKEN = "<video>"
+		DEFAULT_VIDEO_PATCH_TOKEN = "<vid_patch>"
+		DEFAULT_VID_START_TOKEN = "<vid_start>"
+		DEFAULT_VID_END_TOKEN = "<vid_end>"
+
+		if self.model.get_model().vision_config.use_vid_start_end:
+			qs = question + '\n' + DEFAULT_VID_START_TOKEN + DEFAULT_VIDEO_PATCH_TOKEN * self.video_token_len + DEFAULT_VID_END_TOKEN
+		else:
+			qs = question + '\n' + DEFAULT_VIDEO_PATCH_TOKEN * self.video_token_len
+
+		conv_mode = 'video-chatgpt_v1'
+		conv = self.conv_templates[conv_mode].copy()
+		conv.append_message(conv.roles[0], qs)
+		conv.append_message(conv.roles[1], None)
+		prompt = conv.get_prompt()
+
+		# Tokenize the prompt
+		inputs = self.tokenizer([prompt])
+
+		# Preprocess video frames and get image tensor
+		image_tensor = self.image_processor.preprocess(video_frames, return_tensors='pt')['pixel_values']
+
+		# Move image tensor to GPU and reduce precision to half
+		image_tensor = image_tensor.half().cuda()
+
+		# Generate video spatio-temporal features
+		with torch.no_grad():
+			image_forward_outs = self.vision_tower(image_tensor, output_hidden_states=True)
+			frame_features = image_forward_outs.hidden_states[-2][:, 1:]  # Use second to last layer as in LLaVA
+		video_spatio_temporal_features = self.get_spatio_temporal_features_torch(frame_features)
+
+		# Move inputs to GPU
+		input_ids = torch.as_tensor(inputs.input_ids).cuda()
+
+		# Define stopping criteria for generation
+		stop_str = conv.sep if conv.sep_style != self.SeparatorStyle.TWO else conv.sep2
+		stopping_criteria = self.KeywordsStoppingCriteria([stop_str], self.tokenizer, input_ids)
+
+		# Run model inference
+		with torch.inference_mode():
+			output_ids = self.model.generate(
+				input_ids,
+				video_spatio_temporal_features=video_spatio_temporal_features.unsqueeze(0),
+				do_sample=True,
+				temperature=0.2,
+				max_new_tokens=1024,
+				stopping_criteria=[stopping_criteria])
+
+		# Check if output is the same as input
+		n_diff_input_output = (input_ids != output_ids[:, :input_ids.shape[1]]).sum().item()
+		if n_diff_input_output > 0:
+			print(f'[Warning] {n_diff_input_output} output_ids are not the same as the input_ids')
+
+		# Decode output tokens
+		outputs = self.tokenizer.batch_decode(output_ids[:, input_ids.shape[1]:], skip_special_tokens=True)[0]
+
+		# Clean output string
+		outputs = outputs.strip().rstrip(stop_str).strip()
+
+		return outputs
+
+	def get_spatio_temporal_features_torch(self, features):
+
+		# Extract the dimensions of the features
+		t, s, c = features.shape
+
+		# Compute temporal tokens as the mean along the time axis
+		temporal_tokens = torch.mean(features, dim=1)
+
+		# Padding size calculation
+		padding_size = 100 - t
+
+		# Pad temporal tokens if necessary
+		if padding_size > 0:
+			padding = torch.zeros(padding_size, c, device=features.device)
+			temporal_tokens = torch.cat((temporal_tokens, padding), dim=0)
+
+		# Compute spatial tokens as the mean along the spatial axis
+		spatial_tokens = torch.mean(features, dim=0)
+
+		# Concatenate temporal and spatial tokens and cast to half precision
+		concat_tokens = torch.cat([temporal_tokens, spatial_tokens], dim=0).half()
+
+		return concat_tokens
+
+
+class VideoLLaMA2(QAModelInstance):
+	def __init__(self, ckpt='video-llama2-7b', torch_device=torch.device("cuda"), model_precision=torch.float32):
+		from .videoqa_models_library.Video_LLaMA.video_llama import inference
+
+		if ckpt == 'video-llama2-7b':
+			model_weights_path = huggingface_hub.snapshot_download(repo_id="DAMO-NLP-SG/Video-LLaMA-2-7B-Finetuned")
+			llama_model_path = os.path.join(model_weights_path, "llama-2-7b-chat-hf")
+			vl_model_path = os.path.join(model_weights_path, "VL_LLaMA_2_7B_Finetuned.pth")
+
+		elif ckpt == 'video-llama2-13b':
+			model_weights_path = huggingface_hub.snapshot_download(repo_id="DAMO-NLP-SG/Video-LLaMA-2-13B-Finetuned")
+			llama_model_path = os.path.join(model_weights_path, "llama-2-13b-chat-hf")
+			vl_model_path = os.path.join(model_weights_path, "VL_LLaMA_2_13B_Finetuned.pth")
+
+		# we modify the path
+		self.chatbot = inference.ChatBot(cfg_path="ignore.yaml", llama_model_path=llama_model_path, vl_model_path=vl_model_path, model_type='llama_v2', torch_device=torch_device)
+
+	def qa(self, video_path, question):
+		self.chatbot.upload(up_video=video_path, audio_flag=False)
+		llm_message = self.chatbot.ask_answer(user_message=question)
+		self.chatbot.reset()
+		return llm_message
+
+
+class VideoChat2(QAModelInstance):
+	def __init__(self, ckpt='video-chat2-7b', torch_device=torch.device("cuda"), model_precision=torch.float32):
+		from .videoqa_models_library.Video_Chat.video_chat2 import inference
+
+		# we modify the path
+		model_weights_path = huggingface_hub.snapshot_download(repo_id="weikaih/VideoChat2")
+		llama_model_path = os.path.join(model_weights_path, "vicuna-7b-v0")
+		vit_blip_path = os.path.join(model_weights_path, "umt_l16_qformer.pth")
+		videochat2_model_stage2_path = os.path.join(model_weights_path, "videochat2_7b_stage2.pth")
+		videochat2_model_stage3_path = os.path.join(model_weights_path, "videochat2_7b_stage3.pth")
+		self.chatbot = inference.ChatBot(llama_model_path, vit_blip_path, videochat2_model_stage2_path, videochat2_model_stage3_path)
+		self.num_frames = 16
+
+	def qa(self, video_path, question):
+		self.chatbot.upload(video_path, num_frames=self.num_frames)
+		llm_message = self.chatbot.ask_answer(user_message=question)
+		self.chatbot.reset()
+		return llm_message

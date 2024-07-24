@@ -99,8 +99,8 @@ from tma.models.qa_model import ImageQAModel
 # from tma.models.qa_model.prompt import succinct_prompt
 from tma.models.qa_model.prompt import detailed_imageqa_prompt
 
-model = VideoQAModel(
-    model_name= "llavav1.5-7b",
+model = ImageQAModel(
+    model_name= "llava-v1.5-7b",
     prompt_name= "detailed",
     prompt_func= detailed_imageqa_prompt
 )

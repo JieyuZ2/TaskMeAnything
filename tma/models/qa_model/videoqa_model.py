@@ -221,11 +221,11 @@ class VideoLLaVA(QAModelInstance):
 	def __init__(self, ckpt='LanguageBind/Video-LLaVA-7B', torch_device=torch.device("cuda"), model_precision=torch.float32):
 		# Environment setup# Disable certain initializations if necessary
 
-		from .videoqa_models_library.Video_LLaVA.videollava.utils import disable_torch_init
-		from .videoqa_models_library.Video_LLaVA.videollava import constants
-		from .videoqa_models_library.Video_LLaVA.videollava.conversation import conv_templates, SeparatorStyle
-		from .videoqa_models_library.Video_LLaVA.videollava.model.builder import load_pretrained_model
-		from .videoqa_models_library.Video_LLaVA.videollava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria
+		from .videoqa_model_library.Video_LLaVA.videollava.utils import disable_torch_init
+		from .videoqa_model_library.Video_LLaVA.videollava import constants
+		from .videoqa_model_library.Video_LLaVA.videollava.conversation import conv_templates, SeparatorStyle
+		from .videoqa_model_library.Video_LLaVA.videollava.model.builder import load_pretrained_model
+		from .videoqa_model_library.Video_LLaVA.videollava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria
 
 		self.constants = constants
 		self.SeparatorStyle = SeparatorStyle
@@ -283,11 +283,11 @@ class ChatUniVi(QAModelInstance):
 	def __init__(self, ckpt='chat-univi-7b', torch_device=torch.device("cuda"), model_precision=torch.float32):
 		# Environment setup# Disable certain initializations if necessary
 
-		from .videoqa_models_library.Chat_UniVi.ChatUniVi import constants
-		from .videoqa_models_library.Chat_UniVi.ChatUniVi.conversation import conv_templates, SeparatorStyle
-		from .videoqa_models_library.Chat_UniVi.ChatUniVi.model.builder import load_pretrained_model
-		from .videoqa_models_library.Chat_UniVi.ChatUniVi.utils import disable_torch_init
-		from .videoqa_models_library.Chat_UniVi.ChatUniVi.mm_utils import tokenizer_image_token, KeywordsStoppingCriteria
+		from .videoqa_model_library.Chat_UniVi.ChatUniVi import constants
+		from .videoqa_model_library.Chat_UniVi.ChatUniVi.conversation import conv_templates, SeparatorStyle
+		from .videoqa_model_library.Chat_UniVi.ChatUniVi.model.builder import load_pretrained_model
+		from .videoqa_model_library.Chat_UniVi.ChatUniVi.utils import disable_torch_init
+		from .videoqa_model_library.Chat_UniVi.ChatUniVi.mm_utils import tokenizer_image_token, KeywordsStoppingCriteria
 
 		from decord import VideoReader, cpu
 
@@ -441,9 +441,9 @@ class ChatUniVi(QAModelInstance):
 class VideoChatGPT(QAModelInstance):
 	def __init__(self, ckpt, torch_device=torch.device("cuda"), model_precision=torch.float32):
 
-		from .videoqa_models_library.Video_ChatGPT.video_chatgpt.video_conversation import conv_templates, SeparatorStyle
-		from .videoqa_models_library.Video_ChatGPT.video_chatgpt.model.utils import KeywordsStoppingCriteria
-		from .videoqa_models_library.Video_ChatGPT.video_chatgpt.eval.model_utils import initialize_model, load_video
+		from .videoqa_model_library.Video_ChatGPT.video_chatgpt.video_conversation import conv_templates, SeparatorStyle
+		from .videoqa_model_library.Video_ChatGPT.video_chatgpt.model.utils import KeywordsStoppingCriteria
+		from .videoqa_model_library.Video_ChatGPT.video_chatgpt.eval.model_utils import initialize_model, load_video
 
 		model_weights_path = huggingface_hub.snapshot_download(repo_id="weikaih/VideoChatGPT")
 		model_name = os.path.join(model_weights_path, 'LLaVA-Lightning-7B-v1-1')
@@ -547,7 +547,7 @@ class VideoChatGPT(QAModelInstance):
 
 class VideoLLaMA2(QAModelInstance):
 	def __init__(self, ckpt='video-llama2-7b', torch_device=torch.device("cuda"), model_precision=torch.float32):
-		from .videoqa_models_library.Video_LLaMA.video_llama import inference
+		from .videoqa_model_library.Video_LLaMA.video_llama import inference
 
 		if ckpt == 'video-llama2-7b':
 			model_weights_path = huggingface_hub.snapshot_download(repo_id="DAMO-NLP-SG/Video-LLaMA-2-7B-Finetuned")
@@ -571,7 +571,7 @@ class VideoLLaMA2(QAModelInstance):
 
 class VideoChat2(QAModelInstance):
 	def __init__(self, ckpt='video-chat2-7b', torch_device=torch.device("cuda"), model_precision=torch.float32):
-		from .videoqa_models_library.Video_Chat.video_chat2 import inference
+		from .videoqa_model_library.Video_Chat.video_chat2 import inference
 
 		# we modify the path
 		model_weights_path = huggingface_hub.snapshot_download(repo_id="weikaih/VideoChat2")

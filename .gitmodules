@@ -1,0 +1,15 @@
+[submodule "tma/models/qa_model/videoqa_model_library/Video_LLaVA"]
+	path = tma/models/qa_model/videoqa_model_library/Video_LLaVA
+	url = https://github.com/weikaih04/Video-LLaVA.git
+[submodule "tma/models/qa_model/videoqa_model_library/Video_LLaMA"]
+	path = tma/models/qa_model/videoqa_model_library/Video_LLaMA
+	url = https://github.com/weikaih04/Video-LLaMA.git
+[submodule "tma/models/qa_model/videoqa_model_library/Video_ChatGPT"]
+	path = tma/models/qa_model/videoqa_model_library/Video_ChatGPT
+	url = https://github.com/weikaih04/Video-ChatGPT.git
+[submodule "tma/models/qa_model/videoqa_model_library/Video_Chat"]
+	path = tma/models/qa_model/videoqa_model_library/Video_Chat
+	url = https://github.com/weikaih04/Ask-Anything.git
+[submodule "tma/models/qa_model/videoqa_model_library/Chat_UniVi"]
+	path = tma/models/qa_model/videoqa_model_library/Chat_UniVi
+	url = https://github.com/weikaih04/Chat-UniVi.git

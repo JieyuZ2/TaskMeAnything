@@ -91,6 +91,28 @@ We support the following ImageQA and VideoQA models:
 - `ImageQA`: qwenvl-chat, qwenvl, llavav1.5-7b, llavav1.5-13b, instructblip-vicuna7b, instructblip-vicuna13b, internvl-chat-v1.5, gemini-vision-pro, qwen-vl-max, gpt4v, gpt4o
 - `VideoQA`: video-llama2-7b, video-llama2-13b, video-llava-7b, chat-univi-7b, chat-univi-13b, video-chatgpt-7b, video-chat2-7b
 
+
+You can also use our unified vqa interface for inference:
+```python
+from PIL import Image
+from tma.models.qa_model import ImageQAModel
+# from tma.models.qa_model.prompt import succinct_prompt
+from tma.models.qa_model.prompt import detailed_imageqa_prompt
+
+model = VideoQAModel(
+    model_name= "llavav1.5-7b",
+    prompt_name= "detailed",
+    prompt_func= detailed_imageqa_prompt
+)
+
+image = './path/to/image.jpg'
+# or image = Image.open(image_path)
+question = "Describe the image."
+
+model.qa(image, question)
+```
+Or check [videoqa model branch](https://github.com/JieyuZ2/TaskMeAnything/tree/video_model_branch) for videoqa models qa inference.
+
 ## TaskMeAnything-v1-Random
 [TaskMeAnything-v1-imageqa-random](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-random) is a dataset randomly selected from TaskMeAnything-v1, including 5,700 ImageQA.
 

@@ -40,5 +40,10 @@ model = VideoQAModel(
     prompt_name= "detailed",
     prompt_func= detailed_videoqa_prompt
 )
+
+video = './path/to/video.mp4'
+question = "Describe the video."
+
+model.qa(video, question)
 ```
 

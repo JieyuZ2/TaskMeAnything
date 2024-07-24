@@ -42,7 +42,7 @@ We release the following resources:
 ### Usage
 Please check out the `demo` folder for notebook examples of how to use TaskMeAnything.
 
-Notice: If you want to evaluate videoqa models, please check our [videoqa model branch](https://github.com/JieyuZ2/TaskMeAnything/tree/video_model_branch)
+Notice: If you want to evaluate videoqa models, please check our [videoqa model branch](https://github.com/JieyuZ2/TaskMeAnything/tree/videoqa_model)
 
 
 ### Installation
@@ -111,7 +111,7 @@ question = "Describe the image."
 
 model.qa(image, question)
 ```
-Or check [videoqa model branch](https://github.com/JieyuZ2/TaskMeAnything/tree/video_model_branch) for videoqa models qa inference.
+Or check [videoqa model branch](https://github.com/JieyuZ2/TaskMeAnything/tree/videoqa_model) for videoqa models qa inference.
 
 ## TaskMeAnything-v1-Random
 [TaskMeAnything-v1-imageqa-random](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-random) is a dataset randomly selected from TaskMeAnything-v1, including 5,700 ImageQA.

@@ -42,6 +42,8 @@ We release the following resources:
 ### Usage
 Please check out the `demo` folder for notebook examples of how to use TaskMeAnything.
 
+Notice: If you want to evaluate videoqa models, please check our [videoqa model branch](https://github.com/JieyuZ2/TaskMeAnything/tree/video_model_branch)
+
 
 ### Installation
 You can easily download the repo and set up the environments via:

@@ -10,6 +10,8 @@ import os
 from .base_qa_model import QAModel, QAModelInstance
 from .imageqa_model import ImageQAModel
 
+
+# you can also use vqamodel on video task by concatenating the frames of the video
 videoqa_models = {
 	"video-llama2-7b" : ("VideoLLaMA2", "video-llama2-7b"),
 	"video-llama2-13b": ("VideoLLaMA2", "video-llama2-13b"),

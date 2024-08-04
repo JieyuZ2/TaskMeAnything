@@ -122,6 +122,11 @@ model.qa(image, question)
 ```
 Or check [videoqa model branch](https://github.com/JieyuZ2/TaskMeAnything/tree/videoqa_model) for videoqa models qa inference.
 
+## TaskMeAnything-v1 Benchmark
+Currently, we provide two versions of TaskMeAnything-v1 benchmark:
+* TaskMeAnything-v1-Random: [[ImageQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-random)|[VideoQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-videoqa-random)]: A randomly selected from TaskMeAnything-v1, including 5,700 ImageQA and 1,800 VideoQA task instances.
+* TaskMeAnything-v1-2024: [[ImageQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-2924)|[VideoQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-videoqa-2024)]: A benchmark for reflecting the current progress of MLMs by `automatically` finding tasks that popular MLMs struggle with using the TaskMeAnything Top-K query and query approximation algorithms. 
+
 ### Load TaskMeAnything-v1 ImageQA Dataset
 ```python
 import datasets
@@ -147,16 +152,36 @@ with open('/path/save/video.mp4', 'wb') as f:
     f.write(video_binary)
 ```
 
-### Evalution results in TaskMeAnything-v1-2024 benchmark
-* ImageQA
+### Evalution results in TaskMeAnything-v1 benchmark
+* ImageQA in Random
+<p align="center">
+    <img src="assets/random-imageqa-result.png" width="700" style="margin-bottom: 0.2;"/>
+<p>
+
+* VideoQA in Random
+<p align="center">
+    <img src="assets/random-videoqa-result.png" width="700" style="margin-bottom: 0.2;"/>
+<p>
+* ImageQA in 2024
 <p align="center">
     <img src="assets/2024-imageqa-result.png" width="700" style="margin-bottom: 0.2;"/>
 <p>
 
-* VideoQA
+* VideoQA in 2024
 <p align="center">
     <img src="assets/2024-videoqa-result.png" width="700" style="margin-bottom: 0.2;"/>
 <p>
+
+* TaskMeAnything-v1-2024 v.s TaskMeAnything-v1-Random
+<p align="center">
+    <img src="assets/2024vsrandom-imageqa.png" width="700" style="margin-bottom: 0.2;"/>
+<p>
+<p align="center">
+    <img src="assets/2024vsrandom-videoqa.png" width="700" style="margin-bottom: 0.2;"/>
+<p>
+
+* we can see that the performance drops are more significant in the 2024 version, which indicates that the 2024 version is more challenging for the models.
+
 
 For more details, please check out the [paper](https://arxiv.org/abs/2406.11775).
 

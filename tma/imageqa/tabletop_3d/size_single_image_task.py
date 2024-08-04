@@ -13,6 +13,10 @@ grid_options = [2]
 
 
 class Size3DGridTaskGenerator(_3DGridTaskGenerator):
+	def __init__(self, metadata: Objaverse3DMetaData, seed=42):
+		super().__init__(metadata, seed=seed)
+		self.grid_options = grid_options
+
 	def _make_image_metadata(self, grid_size, sizes, size_options, grids, queries, remaining_query=...):
 		objects = [self.metadata.sample(self.rng, 1, "object", q) for q in queries]
 

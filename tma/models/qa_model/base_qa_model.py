@@ -50,9 +50,9 @@ class QAModel(Model):
 		self.cache_path = cache_path
 
 		if self.cache_path is None:
-			print(f"[IMPORTANT] model cache is enabled, cache path: {cache_path}")
-		else:
 			print("[IMPORTANT] model cache is disabled")
+		else:
+			print(f"[IMPORTANT] model cache is enabled, cache path: {cache_path}")
 
 		self.enable_choice_search = enable_choice_search
 		if enable_choice_search:
@@ -75,7 +75,7 @@ class QAModel(Model):
 			return self.model.qa(data, prompt)
 		else:
 			with diskcache.Cache(self.cache_path, size_limit=10 * (2 ** 30)) as cache:
-				key = json.dumps([self._data_to_str(data), prompt])
+				key = json.dumps([self.model_name, self._data_to_str(data), prompt])
 				response = cache.get(key, None)
 				if response is None:
 					response = self.model.qa(data, prompt)

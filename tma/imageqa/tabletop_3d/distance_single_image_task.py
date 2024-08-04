@@ -51,6 +51,7 @@ class Distance3DGridTaskGenerator(_3DGridTaskGenerator):
 
 	def __init__(self, metadata: Objaverse3DMetaData, max_num_distracting_object=2, seed=42):
 		super().__init__(metadata, seed=seed)
+		self.grid_options = grid_options
 		self.max_num_distracting_object = max_num_distracting_object
 
 	def _make_image_metadata(self, grid_size, distance_type, grids, queries, remaining_query=...):

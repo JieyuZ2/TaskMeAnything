@@ -162,6 +162,7 @@ with open('/path/save/video.mp4', 'wb') as f:
 <p align="center">
     <img src="assets/random-videoqa-result.png" width="700" style="margin-bottom: 0.2;"/>
 <p>
+
 * ImageQA in 2024
 <p align="center">
     <img src="assets/2024-imageqa-result.png" width="700" style="margin-bottom: 0.2;"/>

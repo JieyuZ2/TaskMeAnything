@@ -17,6 +17,10 @@
 
 
 ## 🔔News
+ **🔥[2024-08-03]: TaskMeAnything-v1-2024 released! A benchmark for reflecting the current progress of MLMs by `automatically` finding tasks that popular MLMs struggle with using the `TaskMeAnything Top-K query and query approximation algorithms`. This includes [12,270 ImageQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-2024) and [3,567 VideoQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-videoqa-2024) questions that TaskMeAnything automatically approximated as challenging.**
+ 
+ **🔥[2024-07-04]: Demo for TaskMeAnything released! checkout our demo for [generating customized ImageQa, VideoQA benchmarks](https://github.com/JieyuZ2/TaskMeAnything/tree/main/demo/generate) and [model evaluation query](https://github.com/JieyuZ2/TaskMeAnything/tree/main/demo/query)!**
+ 
  **🔥[2024-06-17]: Paper arXived!**
  
  **🔥[2024-06-01]: Code released!**
@@ -32,16 +36,19 @@ The current version can generate > 750M image/video question-answering pairs, wh
 We release the following resources: 
 1. [**TaskMeAnything-v1**](https://github.com/JieyuZ2/TaskMeAnything): the first version of TaskMeAnything, includes 28 task generators which can generate over 750M VQA task.
 2. **TaskMeAnything-v1-Random**[[ImageQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-random)|[VideoQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-videoqa-random)]: A randomly selected from TaskMeAnything-v1, including 5,700 ImageQA and 1,800 VideoQA task instances.
-3. [**TaskMeAnything-DB**](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-eval-db): A database for TaskMeAnything, which stores the evaluation results of 13 open-source MLMs over 1M VQA task instances.
-4. [**TaskMeAnything-UI**](): An interactive graphical interface built upon TaskMeAnything-DB, which allows users to interact with the performance of models on TaskMeAnything-v1 in a intuitve way.
+3. **TaskMeAnything-v1-2024**[[ImageQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-2924)|[VideoQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-videoqa-2024)]: A benchmark for reflecting the current progress of MLMs by `automatically` finding tasks that popular MLMs struggle with using the TaskMeAnything Top-K query and query approximation algorithms. This includes [12,270 ImageQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-2024) and [3,567 VideoQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-videoqa-2024) questions that TaskMeAnything automatically approximated as challenging for over 20 popular MLMs.
+4. [**TaskMeAnything-DB**](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-eval-db): A database for TaskMeAnything, which stores the evaluation results of 13 open-source MLMs over 1M VQA task instances.
+5. [**TaskMeAnything-UI**](): An interactive graphical interface built upon TaskMeAnything-DB, which allows users to interact with the performance of models on TaskMeAnything-v1 in a intuitve way.
 
    
 
 ## TaskMeAnything-v1
 
 ### Usage
-Please check out the `demo` folder for notebook examples of how to use TaskMeAnything.
-
+Demo for TaskMeAnything released! checkout our demo for 
+* [generating customized ImageQa, VideoQA benchmarks](https://github.com/JieyuZ2/TaskMeAnything/tree/main/demo/generate) 
+* [model evaluation query](https://github.com/JieyuZ2/TaskMeAnything/tree/main/demo/query)
+  
 Notice: If you want to evaluate videoqa models, please check our [videoqa model branch](https://github.com/JieyuZ2/TaskMeAnything/tree/videoqa_model)
 
 
@@ -92,6 +99,8 @@ We support the following ImageQA and VideoQA models:
 - `VideoQA`: video-llama2-7b, video-llama2-13b, video-llava-7b, chat-univi-7b, chat-univi-13b, video-chatgpt-7b, video-chat2-7b
 
 
+
+
 You can also use our unified vqa interface for inference:
 ```python
 from PIL import Image
@@ -113,27 +122,23 @@ model.qa(image, question)
 ```
 Or check [videoqa model branch](https://github.com/JieyuZ2/TaskMeAnything/tree/videoqa_model) for videoqa models qa inference.
 
-## TaskMeAnything-v1-Random
-[TaskMeAnything-v1-imageqa-random](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-random) is a dataset randomly selected from TaskMeAnything-v1, including 5,700 ImageQA.
-
-[TaskMeAnything-v1-videoqa-random](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-videoqa-random) is a dataset randomly selected from TaskMeAnything-v1, including 1,800 VideoQA questions.
-
-### Load TaskMeAnything-v1-Random ImageQA Dataset
-```
+### Load TaskMeAnything-v1 ImageQA Dataset
+```python
 import datasets
-
 dataset_name = 'weikaih/TaskMeAnything-v1-imageqa-random'
+#dataset_name = 'weikaih/TaskMeAnything-v1-imageqa-2024'
 dataset = datasets.load_dataset(dataset_name, split = TASK_GENERATOR_SPLIT)
 ```
 where `TASK_GENERATOR_SPLIT` is one of the task generators, eg, `2d_how_many`.
 
 
-### Load TaskMeAnything-v1-Random VideoQA Dataset and Convert Video Binary Stream to mp4
+### Load TaskMeAnything-v1 VideoQA Dataset and Convert Video Binary Stream to mp4
 * Since Huggingface does not support saving .mp4 files in datasets, we save videos in the format of binary streams. After loading, you can convert the video binary stream to .mp4 using the following method.
-```
+```python
 import datasets
 
 dataset_name = 'weikaih/TaskMeAnything-v1-videoqa-random'
+#dataset_name = 'weikaih/TaskMeAnything-v1-videoqa-2024'
 dataset = datasets.load_dataset(dataset_name, split = TASK_GENERATOR_SPLIT)
 
 # example: convert binary stream in dataset to .mp4 files
@@ -141,6 +146,19 @@ video_binary = dataset[0]['video']
 with open('/path/save/video.mp4', 'wb') as f:
     f.write(video_binary)
 ```
+
+### Evalution results in TaskMeAnything-v1-2024 benchmark
+* ImageQA
+<p align="center">
+    <img src="assets/2024-imageqa-result.png" width="700" style="margin-bottom: 0.2;"/>
+<p>
+
+* VideoQA
+<p align="center">
+    <img src="assets/2024-videoqa-result.png" width="700" style="margin-bottom: 0.2;"/>
+<p>
+
+For more details, please check out the [paper](https://arxiv.org/abs/2406.11775).
 
 ## TaskMeAnything-DB
 **TaskMeAnything-DB** are stored in [HuggingFace](https://huggingface.co/datasets/jieyuz2/TaskMeAnything-v1-db)

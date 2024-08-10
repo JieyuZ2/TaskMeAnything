@@ -27,7 +27,7 @@
 
 ## What's TaskMeAnything?
 TaskMeAnything is a benchmark generation engine which produces a benchmark for large multimodal language models (MLMs) tailored to a user's needs. 
-In particular, name maintains an extendable taxonomy of visual assets and can programmatically generate a vast number of task instances. 
+In particular, TaskMeAnything maintains an extendable taxonomy of visual assets and can programmatically generate a vast number of task instances. 
 Additionally, it algorithmically addresses user queries regarding MLM performance efficiently within a computational budget. 
 The current version can generate > 750M image/video question-answering pairs, which focus on evaluating MLM perceptual capabilities.
 

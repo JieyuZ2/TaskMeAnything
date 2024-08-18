@@ -64,7 +64,7 @@ pip install -r requirements.txt
 Notice: if you want to render 3D images/videos by `Blender` locally or use `Internvl-chat-v1.5-24B` that required `flash-attn` which hard to install by pip, you can use the docker image we provide. 
 You can pull the docker image from DockerHub which includes all the dependencies like `Blender`, `flash-attn`, `cuda driver`, `nvcc`, etc.
 ```
-docker push weikaih/ubuntu20.4_internvl_blender_v1.2:latest
+docker pull weikaih/ubuntu20.4_internvl_blender_v1.2:latest
 docker run --gpus all -it weikaih/ubuntu20.4_internvl_blender_v1.2:latest /bin/bash # run the docker image with GPU support
 
 git clone https://github.com/JieyuZ2/TaskMeAnything.git

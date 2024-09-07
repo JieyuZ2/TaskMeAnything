@@ -61,8 +61,8 @@ class QAModel(Model):
 
 	@torch.no_grad()
 	def choice_search(self, free_form_answer, choices):
-		query_embedding = self.sentence_transformer.encode([free_form_answer])
-		choices_embedding = self.sentence_transformer.encode(choices)
+		query_embedding = self.sentence_transformer.encode([free_form_answer], normalize_embeddings=True)
+		choices_embedding = self.sentence_transformer.encode(choices, normalize_embeddings=True)
 		top_choice_index = np.argmax(np.dot(choices_embedding, query_embedding.T))
 		return choices[top_choice_index]
 

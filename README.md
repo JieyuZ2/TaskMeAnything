@@ -17,6 +17,8 @@
 
 
 ## 🔔News
+ **🔥[2024-09-26]: Task Me Anything got accepted by NeurIPS 2024 Dataset & Benchmark track!**
+ 
  **🔥[2024-08-03]: TaskMeAnything-v1-2024 released! A benchmark for reflecting the current progress of MLMs by `automatically` finding tasks that popular MLMs struggle with using the `TaskMeAnything Top-K query and query approximation algorithms`. This includes [12,270 ImageQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-imageqa-2024) and [3,567 VideoQA](https://huggingface.co/datasets/weikaih/TaskMeAnything-v1-videoqa-2024) questions that TaskMeAnything automatically approximated as challenging.**
  
  **🔥[2024-07-04]: Demo for TaskMeAnything released! checkout our demo for [generating customized ImageQa, VideoQA benchmarks](https://github.com/JieyuZ2/TaskMeAnything/tree/main/demo/generate) and [model evaluation query](https://github.com/JieyuZ2/TaskMeAnything/tree/main/demo/query)!**

@@ -210,10 +210,10 @@ The project is not liable for any damages or losses resulting from the use of th
 **BibTeX:**
 
 ```bibtex
-@article{zhang2024task,
+@inproceedings{zhang2024task,
   title={Task Me Anything},
   author={Zhang, Jieyu and Huang, Weikai and Ma, Zixian and Michel, Oscar and He, Dong and Gupta, Tanmay and Ma, Wei-Chiu and Farhadi, Ali and Kembhavi, Aniruddha and Krishna, Ranjay},
-  journal={arXiv preprint arXiv:2406.11775},
+  booktitle={Thirty-Eighth Annual Conference on Neural Information Processing Systems Datasets and Benchmarks Track},
   year={2024}
 }
 ```
